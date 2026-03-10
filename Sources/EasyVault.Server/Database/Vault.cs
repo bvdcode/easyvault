@@ -77,8 +77,7 @@ namespace EasyVault.Server.Database
                 Salt = new byte[16]; // 128 bits salt
                 rng.GetBytes(Salt);
             }
-            using var deriveBytes = new Rfc2898DeriveBytes(password, Salt, 10000, HashAlgorithmName.SHA256);
-            return deriveBytes.GetBytes(32); // 256 bits key for AES-256
+            return Rfc2898DeriveBytes.Pbkdf2(password, Salt, 10000, HashAlgorithmName.SHA256, 32); // 256 bits key for AES-256
         }
 
         private static string EncryptStringAes(string plainText, byte[] key)
