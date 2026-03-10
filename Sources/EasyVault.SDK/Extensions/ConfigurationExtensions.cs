@@ -59,6 +59,10 @@ namespace EasyVault.SDK.Extensions
             string? serverUrl = configuration[serverUrlKey];
             if (string.IsNullOrWhiteSpace(serverUrl))
             {
+                if (serverUrlKey != DefaultServerUrlKey && throwIfError)
+                {
+                    throw new ArgumentException(serverUrlKey, $"Configuration key '{serverUrlKey}' is not set.");
+                }
                 serverUrl = configuration["Vault:ApiUrl"];
             }
             if (string.IsNullOrWhiteSpace(serverUrl))
