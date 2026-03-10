@@ -1,32 +1,31 @@
 import {
   Box,
-  IconButton,
-  LinearProgress,
   Paper,
   Typography,
+  IconButton,
+  LinearProgress,
 } from "@mui/material";
 import { t } from "i18next";
 import { VaultData } from "../types";
 import { toast } from "react-toastify";
 import { VaultEntryEditForm } from ".";
-import { VaultApiService } from "../services";
 import { confirm } from "material-ui-confirm";
-import { useNavigate } from "react-router-dom";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { VaultEntryEditFormRef } from "./VaultEntryEditForm";
 import { Add, Delete, Edit, Save } from "@mui/icons-material";
 import { DataGrid, GridColDef, GridActionsCellItem } from "@mui/x-data-grid";
+import { useVault } from "../contexts/VaultContext";
 
-interface VaultListProps {
-  password: string;
-}
-
-const VaultList: React.FC<VaultListProps> = ({ password }) => {
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
-  const [changed, setChanged] = useState(false);
+const VaultList: React.FC = () => {
   const editFormRef = useRef<VaultEntryEditFormRef>(null);
-  const [vaultData, setVaultData] = useState<VaultData[]>([]);
+  const {
+    vaultData,
+    isLoading,
+    hasChanges,
+    password,
+    updateVaultData,
+    saveVaultData,
+  } = useVault();
   const columns: GridColDef<VaultData>[] = [
     {
       field: "appName",
@@ -65,44 +64,20 @@ const VaultList: React.FC<VaultListProps> = ({ password }) => {
     },
   ];
 
-  useEffect(() => {
-    if (!password) {
-      navigate("/login");
-      return;
-    }
-    const fetchVaultData = async () => {
-      try {
-        setLoading(true);
-        const data = await VaultApiService.getVaultData(password);
-        setVaultData(data);
-      } catch (err) {
-        toast.error(
-          t("vaultList.fetchError", {
-            error: err instanceof Error ? err.message : String(err),
-          })
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchVaultData();
-  }, [navigate, password]);
-
   const getRandomString = (length: number): string => {
     const characters =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     let result = "";
     for (let i = 0; i < length; i++) {
       result += characters.charAt(
-        Math.floor(Math.random() * characters.length)
+        Math.floor(Math.random() * characters.length),
       );
     }
     return result;
   };
 
   const handleAddNewEntry = () => {
-    setVaultData((prevData) => [
+    updateVaultData((prevData: VaultData[]) => [
       ...prevData,
       {
         keyId: crypto.randomUUID(),
@@ -120,23 +95,6 @@ const VaultList: React.FC<VaultListProps> = ({ password }) => {
     ]);
   };
 
-  const handleSave = async () => {
-    try {
-      setLoading(true);
-      await VaultApiService.saveVaultData(password, vaultData);
-      toast.success(t("vaultList.saveSuccess"));
-      setChanged(false);
-    } catch (err) {
-      toast.error(
-        t("vaultList.saveError", {
-          error: err instanceof Error ? err.message : String(err),
-        })
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleEdit = (item: VaultData) => {
     const itemJson = JSON.stringify(item).replace(`"apiKey":"",`, "");
     const itemCopy = JSON.parse(itemJson) as VaultData;
@@ -146,6 +104,10 @@ const VaultList: React.FC<VaultListProps> = ({ password }) => {
       content: <VaultEntryEditForm ref={editFormRef} item={itemCopy} />,
       cancellationText: t("common.cancel"),
       confirmationText: t("common.confirm"),
+      dialogProps: {
+        maxWidth: "md",
+        fullWidth: true,
+      },
     }).then((result) => {
       if (result.confirmed && editFormRef.current) {
         const updatedData = editFormRef.current.getFormData();
@@ -153,7 +115,7 @@ const VaultList: React.FC<VaultListProps> = ({ password }) => {
           (existingItem) =>
             existingItem.keyId !== updatedData.keyId &&
             existingItem.appName.toLowerCase() ===
-              updatedData.appName.toLowerCase()
+              updatedData.appName.toLowerCase(),
         );
 
         if (isDuplicateName) {
@@ -167,14 +129,14 @@ const VaultList: React.FC<VaultListProps> = ({ password }) => {
               (existingItem) =>
                 existingItem.keyId !== updatedData.keyId &&
                 existingItem.appName.toLowerCase() ===
-                  updatedData.appName.toLowerCase()
+                  updatedData.appName.toLowerCase(),
             );
 
             counter++;
           }
 
           toast.info(
-            t("vaultList.nameAdjusted", { newName: updatedData.appName })
+            t("vaultList.nameAdjusted", { newName: updatedData.appName }),
           );
         }
 
@@ -190,16 +152,15 @@ const VaultList: React.FC<VaultListProps> = ({ password }) => {
           values: sortedValues,
         };
 
-        setVaultData((prevData) =>
-          prevData.map((existingItem) =>
-            existingItem.keyId === finalData.keyId ? finalData : existingItem
-          )
+        updateVaultData((prevData: VaultData[]) =>
+          prevData.map((existingItem: VaultData) =>
+            existingItem.keyId === finalData.keyId ? finalData : existingItem,
+          ),
         );
 
         const updatedJson = JSON.stringify(updatedData);
         const isReallyChanged = itemJson !== updatedJson;
         if (isReallyChanged) {
-          setChanged(true);
           toast.warning(t("vaultList.editSuccess"));
         } else {
           toast.info(t("vaultList.noChanges"));
@@ -219,17 +180,16 @@ const VaultList: React.FC<VaultListProps> = ({ password }) => {
       confirmationButtonProps: { color: "error" },
     }).then((result) => {
       if (result.confirmed) {
-        setVaultData((prevData) =>
-          prevData.filter((i) => i.keyId !== item.keyId)
+        updateVaultData((prevData: VaultData[]) =>
+          prevData.filter((i: VaultData) => i.keyId !== item.keyId),
         );
         toast.success(t("vaultList.deleteSuccess"));
-        setChanged(true);
       }
     });
   };
 
   return (
-    <Paper>
+    <Paper sx={{ width: "100%", height: "100%", overflow: "hidden" }}>
       <Box
         maxWidth={800}
         margin="auto"
@@ -237,18 +197,21 @@ const VaultList: React.FC<VaultListProps> = ({ password }) => {
         display="flex"
         flexDirection="column"
         alignItems="center"
+        height="100%"
       >
         <Typography variant="h6" gutterBottom>
           {t("vaultList.title", {
             keyPart:
-              password?.length > 4 ? `****${password.slice(-4)}` : password,
+              password && password.length > 4
+                ? `****${password.slice(-4)}`
+                : password || "",
           })}
         </Typography>
-        {loading && <LinearProgress sx={{ width: "100%", mb: 2 }} />}{" "}
-        {!loading && (
+        {isLoading && <LinearProgress sx={{ width: "100%", mb: 2 }} />}{" "}
+        {!isLoading && (
           <>
             {vaultData && vaultData.length > 0 ? (
-              <Box sx={{ height: 631, width: "100%" }}>
+              <Box sx={{ flexGrow: 1, width: "100%", minHeight: 0 }}>
                 <DataGrid
                   rows={vaultData}
                   columns={columns}
@@ -282,17 +245,17 @@ const VaultList: React.FC<VaultListProps> = ({ password }) => {
             >
               <IconButton
                 title={
-                  changed
+                  hasChanges
                     ? t("vaultList.saveEntries")
                     : t("vaultList.noChanges")
                 }
-                onClick={handleSave}
-                disabled={!changed}
+                onClick={saveVaultData}
+                disabled={!hasChanges}
                 sx={{
                   display: vaultData.length === 0 ? "none" : "inline-flex",
                 }}
               >
-                <Save color={changed ? "primary" : "disabled"} />
+                <Save color={hasChanges ? "primary" : "disabled"} />
               </IconButton>
               <Box flexGrow={1} />
               <IconButton

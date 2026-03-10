@@ -97,7 +97,7 @@ const VaultEntryEditForm = forwardRef<
                         "https://" +
                           window.location.hostname +
                           "/api/v1/vault/secrets/" +
-                          formData.keyId
+                          formData.keyId,
                       );
                       toast.info(t("vaultEdit.linkCopied"));
                     }}
@@ -264,7 +264,7 @@ const VaultEntryEditForm = forwardRef<
                 setFormData((prev) => ({
                   ...prev,
                   allowedAddresses: prev.allowedAddresses.filter(
-                    (a) => a !== address
+                    (a) => a !== address,
                   ),
                 }))
               }
@@ -325,7 +325,7 @@ const VaultEntryEditForm = forwardRef<
                 setFormData((prev) => ({
                   ...prev,
                   allowedUserAgents: prev.allowedUserAgents.filter(
-                    (a) => a !== agent
+                    (a) => a !== agent,
                   ),
                 }))
               }

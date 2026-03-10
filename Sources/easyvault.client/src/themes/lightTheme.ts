@@ -4,10 +4,10 @@ export const lightTheme = createTheme({
   palette: {
     mode: "light",
     primary: {
-      main: "rgb(254, 108, 0)",
+      main: "#729200ff",
     },
     secondary: {
-      main: "rgb(254, 108, 0)",
+      main: "#fe6c00",
     },
     background: {
       default: "rgba(255, 255, 255, 0.95)",

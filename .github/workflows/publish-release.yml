@@ -51,11 +51,11 @@ jobs:
         id: tags
         shell: bash
         run: |
-          V_MINOR="v${{ steps.gitversion.outputs.Major }}.${{ steps.gitversion.outputs.Minor }}"
-          echo "minor_tag=$V_MINOR" >> "$GITHUB_OUTPUT"
-          echo "docker_tag=${{ env.DOCKER_NAMESPACE }}/${{ env.DOCKER_IMAGE_NAME }}:$V_MINOR" >> "$GITHUB_OUTPUT"
+          VERSION="v${{ steps.gitversion.outputs.SemVer }}"
+          echo "version_tag=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "docker_tag=${{ env.DOCKER_NAMESPACE }}/${{ env.DOCKER_IMAGE_NAME }}:$VERSION" >> "$GITHUB_OUTPUT"
           echo "docker_tag_latest=${{ env.DOCKER_NAMESPACE }}/${{ env.DOCKER_IMAGE_NAME }}:latest" >> "$GITHUB_OUTPUT"
-          echo "ghcr_tag=ghcr.io/${{ github.repository_owner }}/${{ env.DOCKER_IMAGE_NAME }}:$V_MINOR" >> "$GITHUB_OUTPUT"
+          echo "ghcr_tag=ghcr.io/${{ github.repository_owner }}/${{ env.DOCKER_IMAGE_NAME }}:$VERSION" >> "$GITHUB_OUTPUT"
           echo "ghcr_tag_latest=ghcr.io/${{ github.repository_owner }}/${{ env.DOCKER_IMAGE_NAME }}:latest" >> "$GITHUB_OUTPUT"
 
       - name: Login to Docker Hub
@@ -125,8 +125,8 @@ jobs:
         if: ${{ steps.gitversion.outputs.CommitsSinceVersionSource > 0 }}
         uses: ncipollo/release-action@v1
         with:
-          tag: ${{ steps.tags.outputs.minor_tag }}
-          name: Release ${{ steps.tags.outputs.minor_tag }}
+          tag: ${{ steps.tags.outputs.version_tag }}
+          name: Release ${{ steps.tags.outputs.version_tag }}
           draft: false
           prerelease: false
           token: ${{ github.token }}

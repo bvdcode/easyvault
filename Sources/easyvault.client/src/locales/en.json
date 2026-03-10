@@ -8,7 +8,14 @@
   "settings": {
     "language": "Language",
     "darkMode": "Theme",
-    "logout": "Change encryption key"
+    "logout": "Change encryption key",
+    "export": "Export",
+    "import": "Import",
+    "exportSuccess": "Vault data has been exported successfully",
+    "importSuccess": "Vault data has been imported successfully. Don't forget to save!",
+    "importError": "Failed to import vault data: {{error}}",
+    "invalidFileFormat": "Invalid file format. Expected JSON with an array of vault entries.",
+    "invalidVaultEntry": "Invalid vault entry structure. Required fields: keyId, appName, values."
   },
   "vaultPage": {
     "tabs": {

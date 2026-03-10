@@ -15,6 +15,7 @@ namespace EasyVault.Server.Controllers
     public class VaultController(ILogger<VaultController> _logger, AppDbContext _dbContext, IVault _vault) : ControllerBase
     {
         [HttpGet("/api/v1/vault/{key}")]
+        [HttpGet("/api/v2/vault/{key}")]
         public async Task<IEnumerable<VaultSecret>> GetVaultAsync([FromRoute][Required] string key)
         {
             string ip = Request.GetRemoteAddress();
@@ -46,6 +47,7 @@ namespace EasyVault.Server.Controllers
         }
 
         [HttpPost("/api/v1/vault/{key}")]
+        [HttpPost("/api/v2/vault/{key}")]
         public async Task<IActionResult> UpdateVaultAsync([FromRoute][Required] string key, [FromBody] IEnumerable<VaultSecret> secrets)
         {
             string ip = Request.GetRemoteAddress();
@@ -95,6 +97,7 @@ namespace EasyVault.Server.Controllers
         }
 
         [HttpGet("/api/v1/vault/secrets/{keyId}")]
+        [HttpGet("/api/v2/vault/secrets/{keyId}")]
         public async Task<IActionResult> GetSecret(Guid keyId, [FromQuery] string format = "json")
         {
             string ip = Request.GetRemoteAddress();
