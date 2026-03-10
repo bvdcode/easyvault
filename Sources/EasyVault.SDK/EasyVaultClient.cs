@@ -41,7 +41,8 @@ namespace EasyVault.SDK
             }
             else
             {
-                throw new HttpRequestException(response.ReasonPhrase);
+                throw new HttpRequestException("Failed to retrieve secrets from " +
+                    _httpClient.BaseAddress + ". Status code: " + response.StatusCode);
             }
         }
 
