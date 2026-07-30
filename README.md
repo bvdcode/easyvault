@@ -92,6 +92,21 @@ Settings in `Sources/EasyVault.Server/appsettings.json`:
 
 You can override these with ASP.NET Core environment variables.
 
+Set `BOOTSTRAP_SECRET` to the vault encryption key to unseal the latest matching
+stored vault automatically when the server starts. Without this variable, the
+vault keeps the default manual-unseal behavior.
+
+```powershell
+docker run --name easyvault -p 8080:8080 -v easyvault_data:/data `
+  -e BOOTSTRAP_SECRET="<your-vault-key>" `
+  -d bvdcode/easyvault:latest
+```
+
+Provide the value at runtime through your deployment's secret management. The
+server does not log the value. Automatic unsealing makes secret retrieval
+endpoints ready after startup; the Web UI still requires the encryption key to
+view or edit the vault.
+
 ## API (brief)
 
 1. Create/update vault (encrypt and save) — the UI does this for you:

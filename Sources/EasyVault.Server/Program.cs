@@ -19,6 +19,7 @@ namespace EasyVault.Server
             builder.Services.AddDbContext<AppDbContext>(x => x.UseSqlite(builder.Configuration["SqliteConnectionString"]))
                 .AddDefaultCorsWithOrigins(corsOrigins)
                 .AddSingleton<IVault, MemoryVaultService>()
+                .AddHostedService<BootstrapVaultHostedService>()
                 .AddHealthChecks()
                 .AddCheck<SealingHealthCheck>("Vault")
                 .AddCheck<DatabaseHealthCheck<AppDbContext>>("Database");
