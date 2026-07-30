@@ -45,14 +45,16 @@ const VaultPage: React.FC = () => {
         <Tab label={t("vaultPage.tabs.settings")} />
       </Tabs>
       <Box
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        justifyContent="flex-start"
-        width="100%"
-        flex={1}
-        overflow="auto"
-        padding={2}
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "flex-start",
+          width: "100%",
+          flex: 1,
+          overflow: "auto",
+          padding: 2,
+        }}
       >
         {selectedTab === 0 && <VaultList />}
         {selectedTab === 1 && <Settings onTabChange={setSelectedTab} />}

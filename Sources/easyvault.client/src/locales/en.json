@@ -7,6 +7,10 @@
   },
   "settings": {
     "language": "Language",
+    "languages": {
+      "en": "English",
+      "ru": "Русский"
+    },
     "darkMode": "Theme",
     "logout": "Change encryption key",
     "export": "Export",

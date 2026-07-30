@@ -55,10 +55,9 @@ const VaultList: React.FC = () => {
         />,
         <GridActionsCellItem
           key="delete"
-          icon={<Delete />}
+          icon={<Delete color="error" />}
           label={t("vaultList.deleteEntry")}
           onClick={() => handleDelete(params.row)}
-          color="error"
         />,
       ],
     },
@@ -191,13 +190,15 @@ const VaultList: React.FC = () => {
   return (
     <Paper sx={{ width: "100%", height: "100%", overflow: "hidden" }}>
       <Box
-        maxWidth={800}
-        margin="auto"
-        padding={1}
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        height="100%"
+        sx={{
+          maxWidth: 800,
+          margin: "auto",
+          padding: 1,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          height: "100%",
+        }}
       >
         <Typography variant="h6" gutterBottom>
           {t("vaultList.title", {
@@ -235,13 +236,15 @@ const VaultList: React.FC = () => {
             )}
 
             <Box
-              display="flex"
-              flexDirection="row"
-              justifyContent="space-between"
-              alignItems="center"
-              marginTop={2}
-              gap={1}
-              width="100%"
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginTop: 2,
+                gap: 1,
+                width: "100%",
+              }}
             >
               <IconButton
                 title={
@@ -257,7 +260,11 @@ const VaultList: React.FC = () => {
               >
                 <Save color={hasChanges ? "primary" : "disabled"} />
               </IconButton>
-              <Box flexGrow={1} />
+              <Box
+                sx={{
+                  flexGrow: 1,
+                }}
+              />
               <IconButton
                 title={t("vaultList.addNewEntry")}
                 onClick={handleAddNewEntry}

@@ -3,7 +3,8 @@ import { darkTheme } from "../themes/darkTheme";
 import { ToastContainer } from "react-toastify";
 import { lightTheme } from "../themes/lightTheme";
 import { ThemeProvider as MuiThemeProvider } from "@mui/material";
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, ReactNode } from "react";
+import { useThemeStore } from "../stores/themeStore";
 
 interface ThemeContextType {
   isDarkMode: boolean;
@@ -14,21 +15,8 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | null>(null);
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    const saved = localStorage.getItem("theme");
-    return saved
-      ? saved === "dark"
-      : window.matchMedia("(prefers-color-scheme: dark)").matches;
-  });
-
+  const { isDarkMode, toggleTheme } = useThemeStore();
   const theme = isDarkMode ? darkTheme : lightTheme;
-  const toggleTheme = () => {
-    setIsDarkMode((prev) => {
-      const newMode = !prev;
-      localStorage.setItem("theme", newMode ? "dark" : "light");
-      return newMode;
-    });
-  };
 
   return (
     <ThemeContext.Provider value={{ isDarkMode, toggleTheme, theme }}>

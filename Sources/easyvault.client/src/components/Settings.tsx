@@ -21,7 +21,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAppTheme } from "../contexts/ThemeContext";
 import { useVault } from "../contexts/VaultContext";
-import { VaultData } from "../types";
+import { VaultDataSchema } from "../types/VaultDataSchema";
 
 interface SettingsProps {
   onTabChange: (tab: number) => void;
@@ -36,55 +36,6 @@ const Settings: React.FC<SettingsProps> = ({ onTabChange }) => {
 
   const handleLanguageChange = (event: SelectChangeEvent<string>) => {
     i18n.changeLanguage(event.target.value);
-  };
-
-  const validateVaultData = (data: unknown): data is VaultData[] => {
-    if (!Array.isArray(data)) {
-      return false;
-    }
-
-    return data.every((item) => {
-      if (typeof item !== "object" || item === null) {
-        return false;
-      }
-
-      const entry = item as Record<string, unknown>;
-
-      // Check required fields
-      if (
-        typeof entry.keyId !== "string" ||
-        typeof entry.appName !== "string" ||
-        typeof entry.values !== "object" ||
-        entry.values === null
-      ) {
-        return false;
-      }
-
-      // Validate values is Record<string, string>
-      const values = entry.values as Record<string, unknown>;
-      if (!Object.values(values).every((v) => typeof v === "string")) {
-        return false;
-      }
-
-      // Validate optional arrays
-      if (
-        entry.allowedAddresses !== undefined &&
-        (!Array.isArray(entry.allowedAddresses) ||
-          !entry.allowedAddresses.every((addr) => typeof addr === "string"))
-      ) {
-        return false;
-      }
-
-      if (
-        entry.allowedUserAgents !== undefined &&
-        (!Array.isArray(entry.allowedUserAgents) ||
-          !entry.allowedUserAgents.every((ua) => typeof ua === "string"))
-      ) {
-        return false;
-      }
-
-      return true;
-    });
   };
 
   const handleExport = () => {
@@ -130,15 +81,21 @@ const Settings: React.FC<SettingsProps> = ({ onTabChange }) => {
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
-        const content = e.target?.result as string;
-        const parsedData = JSON.parse(content);
-
-        if (!validateVaultData(parsedData)) {
+        const content = e.target?.result;
+        if (typeof content !== "string") {
           toast.error(t("settings.invalidFileFormat"));
           return;
         }
 
-        importVaultData(parsedData);
+        const parsedData = VaultDataSchema.array().safeParse(
+          JSON.parse(content),
+        );
+        if (!parsedData.success) {
+          toast.error(t("settings.invalidFileFormat"));
+          return;
+        }
+
+        importVaultData(parsedData.data);
         toast.success(t("settings.importSuccess"));
         onTabChange(0);
       } catch (error) {
@@ -148,7 +105,6 @@ const Settings: React.FC<SettingsProps> = ({ onTabChange }) => {
           }),
         );
       } finally {
-        // Reset file input
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
         }
@@ -165,18 +121,33 @@ const Settings: React.FC<SettingsProps> = ({ onTabChange }) => {
         ref={fileInputRef}
         onChange={handleFileChange}
         accept=".json"
-        style={{ display: "none" }}
+        hidden
       />
-      <Stack spacing={4} mt={3} maxWidth={600} mx="auto">
-        <Box display="flex" alignItems="center" justifyContent="space-between">
+      <Stack
+        spacing={4}
+        sx={{
+          mt: 3,
+          maxWidth: 600,
+          mx: "auto",
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
           <InputLabel id="language-select-label">
             {t("settings.darkMode")}
           </InputLabel>
           <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            sx={{ width: "auto" }}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "auto",
+            }}
           >
             <Brightness7
               sx={{
@@ -197,11 +168,23 @@ const Settings: React.FC<SettingsProps> = ({ onTabChange }) => {
           </Box>
         </Box>
 
-        <Box display="flex" alignItems="center" justifyContent="space-between">
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
           <InputLabel id="language-select-label">
             {t("settings.language")}
           </InputLabel>
-          <Box display="flex" alignItems="center" justifyContent="center">
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
             <Select
               labelId="language-select-label"
               id="language-select"
@@ -210,13 +193,19 @@ const Settings: React.FC<SettingsProps> = ({ onTabChange }) => {
               label={t("settings.language")}
               variant="standard"
             >
-              <MenuItem value="en">English</MenuItem>
-              <MenuItem value="ru">Русский</MenuItem>
+              <MenuItem value="en">{t("settings.languages.en")}</MenuItem>
+              <MenuItem value="ru">{t("settings.languages.ru")}</MenuItem>
             </Select>
           </Box>
         </Box>
 
-        <Box display="flex" alignItems="center" justifyContent="space-between">
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
           <Button
             onClick={() => navigate("/login")}
             variant="outlined"
@@ -227,10 +216,12 @@ const Settings: React.FC<SettingsProps> = ({ onTabChange }) => {
         </Box>
 
         <Box
-          display="flex"
-          alignItems="center"
-          justifyContent="space-between"
-          gap={1}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 1,
+          }}
         >
           <Button
             onClick={handleImport}

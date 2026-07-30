@@ -3,6 +3,16 @@ import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
+  server: {
+    proxy: {
+      "/api": {
+        target: "https://vault.splidex.com",
+        changeOrigin: true,
+        secure: true,
+        ws: true,
+      },
+    },
+  },
   plugins: [
     react(),
     VitePWA({

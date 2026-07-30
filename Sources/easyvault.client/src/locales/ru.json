@@ -6,6 +6,10 @@
     "emptyPasswordError": "Пожалуйста, введите свой ключ"
   },
   "settings": {
+    "languages": {
+      "en": "English",
+      "ru": "Русский"
+    },
     "language": "Язык",
     "darkMode": "Тема",
     "logout": "Сменить ключ шифрования",

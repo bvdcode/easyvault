@@ -19,18 +19,19 @@ const LoginPage: React.FC = () => {
   const [password, setPassword] = React.useState<string>("");
 
   const handleLogin = () => {
-    if (!password) {
+    const trimmedPassword = password.trim();
+    if (!trimmedPassword) {
       alert(t("loginPage.emptyPasswordError"));
       return;
     }
 
-    navigate("/vault", { state: { password } });
+    navigate("/vault", { state: { password: trimmedPassword } });
   };
 
   return (
     <Paper
       elevation={3}
-      style={{
+      sx={{
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -39,13 +40,15 @@ const LoginPage: React.FC = () => {
       }}
     >
       <Box
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        justifyContent="center"
-        maxWidth={600}
-        margin="auto"
-        padding={2}
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          maxWidth: 600,
+          margin: "auto",
+          padding: 2,
+        }}
       >
         <InputLabel htmlFor="password-input">
           {t("loginPage.passwordTitle")}
@@ -78,7 +81,7 @@ const LoginPage: React.FC = () => {
         >
           {t("loginPage.loginButton")}
         </Button>
-        <Alert severity="info" style={{ marginTop: 16 }}>
+        <Alert severity="info" sx={{ mt: 2 }}>
           {t("loginPage.infoMessage")}
         </Alert>
       </Box>

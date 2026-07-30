@@ -1,0 +1,7 @@
+{
+  "rules": {
+    "declaration-property-value-disallowed-list": {
+      "/.*/": ["/\\d+(?:d?vh|d?vw)\\b/i"]
+    }
+  }
+}

@@ -1,13 +1,10 @@
 import {
   Box,
   TextField,
-  Button,
   Divider,
   Typography,
   IconButton,
   Grid,
-  Chip,
-  Stack,
 } from "@mui/material";
 import {
   Add as AddIcon,
@@ -21,6 +18,7 @@ import { VaultData } from "../types";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import React, { useState, useImperativeHandle, forwardRef } from "react";
+import AllowedValuesEditor from "./AllowedValuesEditor";
 
 interface VaultEntryEditFormProps {
   item: VaultData;
@@ -56,7 +54,9 @@ const VaultEntryEditForm = forwardRef<
   };
 
   const handleAddKeyValue = () => {
-    if (!newKey.trim() || newKey in formData.values) return;
+    if (!newKey.trim() || newKey in formData.values) {
+      return;
+    }
 
     setFormData((prev) => ({
       ...prev,
@@ -67,9 +67,19 @@ const VaultEntryEditForm = forwardRef<
   };
 
   return (
-    <Box sx={{ p: 2, maxHeight: "70vh", overflow: "auto" }}>
-      <Box mb={3}>
-        <Typography variant="subtitle1" fontWeight="medium" gutterBottom>
+    <Box sx={{ p: 2, maxHeight: "40rem", overflow: "auto" }}>
+      <Box
+        sx={{
+          mb: 3,
+        }}
+      >
+        <Typography
+          variant="subtitle1"
+          gutterBottom
+          sx={{
+            fontWeight: "medium",
+          }}
+        >
           {t("vaultEdit.apiKeyLabel")}
         </Typography>
         <TextField
@@ -122,10 +132,19 @@ const VaultEntryEditForm = forwardRef<
           }}
         />
       </Box>
-
       <Divider sx={{ my: 3 }} />
-      <Box mb={3}>
-        <Typography variant="subtitle1" fontWeight="medium" gutterBottom>
+      <Box
+        sx={{
+          mb: 3,
+        }}
+      >
+        <Typography
+          variant="subtitle1"
+          gutterBottom
+          sx={{
+            fontWeight: "medium",
+          }}
+        >
           {t("vaultEdit.appNameLabel")}
         </Typography>
         <TextField
@@ -137,17 +156,25 @@ const VaultEntryEditForm = forwardRef<
           placeholder={t("vaultEdit.appNamePlaceholder")}
         />
       </Box>
-
       <Divider sx={{ my: 3 }} />
-
-      <Box mb={3}>
-        <Typography variant="subtitle1" fontWeight="medium" gutterBottom>
+      <Box
+        sx={{
+          mb: 3,
+        }}
+      >
+        <Typography
+          variant="subtitle1"
+          gutterBottom
+          sx={{
+            fontWeight: "medium",
+          }}
+        >
           {t("vaultEdit.secretValuesLabel")}
         </Typography>
 
         {Object.entries(formData.values).map(([key, value]) => (
           <Grid container spacing={2} key={key} sx={{ mb: 1 }}>
-            <Grid item xs={5}>
+            <Grid size={5}>
               <TextField
                 fullWidth
                 value={key}
@@ -165,7 +192,7 @@ const VaultEntryEditForm = forwardRef<
                 }}
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid size={6}>
               <TextField
                 fullWidth
                 value={value}
@@ -180,13 +207,12 @@ const VaultEntryEditForm = forwardRef<
               />
             </Grid>
             <Grid
-              item
-              xs={1}
               sx={{
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
               }}
+              size={1}
             >
               <IconButton
                 size="small"
@@ -204,8 +230,14 @@ const VaultEntryEditForm = forwardRef<
         ))}
 
         <Box sx={{ mt: 2 }}>
-          <Grid container spacing={2} alignItems="center">
-            <Grid item xs={11}>
+          <Grid
+            container
+            spacing={2}
+            sx={{
+              alignItems: "center",
+            }}
+          >
+            <Grid size={11}>
               <TextField
                 fullWidth
                 value={newKey}
@@ -225,13 +257,12 @@ const VaultEntryEditForm = forwardRef<
               />
             </Grid>
             <Grid
-              item
-              xs={1}
               sx={{
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
               }}
+              size={1}
             >
               <IconButton
                 size="small"
@@ -245,132 +276,29 @@ const VaultEntryEditForm = forwardRef<
           </Grid>
         </Box>
       </Box>
-
       <Divider sx={{ my: 3 }} />
-
-      <Box mb={3}>
-        <Typography variant="subtitle1" fontWeight="medium" gutterBottom>
-          {t("vaultEdit.allowedAddressesLabel")}
-        </Typography>
-
-        <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ mb: 2 }}>
-          {formData.allowedAddresses.map((address) => (
-            <Chip
-              key={address}
-              label={address}
-              variant="outlined"
-              icon={<ComputerIcon />}
-              onDelete={() =>
-                setFormData((prev) => ({
-                  ...prev,
-                  allowedAddresses: prev.allowedAddresses.filter(
-                    (a) => a !== address,
-                  ),
-                }))
-              }
-              sx={{ mb: 1 }}
-            />
-          ))}
-        </Stack>
-
-        <Grid container spacing={2}>
-          <Grid item xs={9}>
-            <TextField
-              fullWidth
-              value={newAddress}
-              onChange={(e) => setNewAddress(e.target.value)}
-              placeholder={t("vaultEdit.addressPlaceholder")}
-              size="small"
-            />
-          </Grid>
-          <Grid item xs={3}>
-            <Button
-              variant="outlined"
-              fullWidth
-              onClick={() => {
-                if (
-                  newAddress.trim() &&
-                  !formData.allowedAddresses.includes(newAddress)
-                ) {
-                  setFormData((prev) => ({
-                    ...prev,
-                    allowedAddresses: [...prev.allowedAddresses, newAddress],
-                  }));
-                  setNewAddress("");
-                }
-              }}
-              disabled={!newAddress.trim()}
-              startIcon={<AddIcon />}
-            >
-              {t("common.add")}
-            </Button>
-          </Grid>
-        </Grid>
-      </Box>
-
+      <AllowedValuesEditor
+        label={t("vaultEdit.allowedAddressesLabel")}
+        placeholder={t("vaultEdit.addressPlaceholder")}
+        values={formData.allowedAddresses}
+        inputValue={newAddress}
+        icon={<ComputerIcon />}
+        onInputChange={setNewAddress}
+        onValuesChange={(allowedAddresses) =>
+          setFormData((previous) => ({ ...previous, allowedAddresses }))
+        }
+      />
       <Divider sx={{ my: 3 }} />
-
-      <Box mb={3}>
-        <Typography variant="subtitle1" fontWeight="medium" gutterBottom>
-          {t("vaultEdit.allowedUserAgentsLabel")}
-        </Typography>
-
-        <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ mb: 2 }}>
-          {formData.allowedUserAgents.map((agent) => (
-            <Chip
-              key={agent}
-              label={agent}
-              variant="outlined"
-              onDelete={() =>
-                setFormData((prev) => ({
-                  ...prev,
-                  allowedUserAgents: prev.allowedUserAgents.filter(
-                    (a) => a !== agent,
-                  ),
-                }))
-              }
-              sx={{ mb: 1 }}
-            />
-          ))}
-        </Stack>
-
-        <Grid container spacing={2}>
-          <Grid item xs={9}>
-            <TextField
-              fullWidth
-              value={newUserAgent}
-              onChange={(e) => setNewUserAgent(e.target.value)}
-              placeholder={t("vaultEdit.userAgentPlaceholder")}
-              size="small"
-            />
-          </Grid>
-          <Grid item xs={3}>
-            <Button
-              variant="outlined"
-              fullWidth
-              onClick={() => {
-                if (
-                  newUserAgent.trim() &&
-                  !formData.allowedUserAgents.includes(newUserAgent)
-                ) {
-                  setFormData((prev) => ({
-                    ...prev,
-                    allowedUserAgents: [
-                      ...prev.allowedUserAgents,
-                      newUserAgent,
-                    ],
-                  }));
-                  setNewUserAgent("");
-                }
-              }}
-              disabled={!newUserAgent.trim()}
-              startIcon={<AddIcon />}
-            >
-              {t("common.add")}
-            </Button>
-          </Grid>
-        </Grid>
-      </Box>
+      <AllowedValuesEditor
+        label={t("vaultEdit.allowedUserAgentsLabel")}
+        placeholder={t("vaultEdit.userAgentPlaceholder")}
+        values={formData.allowedUserAgents}
+        inputValue={newUserAgent}
+        onInputChange={setNewUserAgent}
+        onValuesChange={(allowedUserAgents) =>
+          setFormData((previous) => ({ ...previous, allowedUserAgents }))
+        }
+      />
     </Box>
   );
 });
