@@ -107,7 +107,7 @@ namespace EasyVault.Server.Controllers
                 IpAddress = ip,
                 Route = Request.Path.ToString().Replace(keyId.ToString(), new string('*', keyId.ToString().Length)),
                 UserAgent = userAgent,
-                Method = nameof(UpdateVaultAsync)
+                Method = nameof(GetSecret)
             };
             await _dbContext.AccessEvents.AddAsync(accessEvent);
             await _dbContext.SaveChangesAsync();
@@ -115,7 +115,7 @@ namespace EasyVault.Server.Controllers
             {
                 return Unauthorized("Vault is sealed. Unseal it first.");
             }
-            VaultSecret result = _vault.GetSecrets(keyId);
+            VaultSecret? result = _vault.GetSecrets(keyId);
             if (result == null || !IsAllowed(result, ip, userAgent))
             {
                 _logger.LogWarning("Unauthorized access attempt from {remoteAddress} with user agent {userAgent}",

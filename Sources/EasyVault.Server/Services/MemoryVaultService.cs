@@ -13,21 +13,17 @@ namespace EasyVault.Server.Services
             return _secrets.Count == 0;
         }
 
-        public VaultSecret GetSecrets(Guid keyId)
+        public VaultSecret? GetSecrets(Guid keyId)
         {
             if (IsSealed)
             {
                 throw new InvalidOperationException("Vault is sealed. Cannot access secrets.");
             }
-            if (keyId == Guid.Empty)
-            {
-                throw new ArgumentException("Key ID cannot be empty.", nameof(keyId));
-            }
             if (_secrets.TryGetValue(keyId, out var secrets))
             {
                 return secrets;
             }
-            throw new KeyNotFoundException($"No secrets found for key ID: {keyId}");
+            return null;
         }
 
         public void Unseal(IEnumerable<VaultSecret> secrets)
