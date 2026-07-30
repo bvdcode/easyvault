@@ -53,7 +53,7 @@ const VaultPage: React.FC = () => {
           width: "100%",
           flex: 1,
           overflow: "auto",
-          padding: 2,
+          padding: { xs: 1, sm: 2 },
         }}
       >
         {selectedTab === 0 && <VaultList />}

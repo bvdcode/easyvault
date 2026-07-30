@@ -43,7 +43,7 @@ const AllowedValuesEditor = ({
   };
 
   return (
-    <Box sx={{ mb: 3 }}>
+    <Box>
       <Typography
         variant="subtitle1"
         gutterBottom
@@ -66,7 +66,7 @@ const AllowedValuesEditor = ({
         ))}
       </Stack>
       <Grid container spacing={2}>
-        <Grid size={9}>
+        <Grid size={{ xs: 12, sm: 9 }}>
           <TextField
             fullWidth
             value={inputValue}
@@ -75,7 +75,7 @@ const AllowedValuesEditor = ({
             size="small"
           />
         </Grid>
-        <Grid size={3}>
+        <Grid size={{ xs: 12, sm: 3 }}>
           <Button
             variant="outlined"
             fullWidth

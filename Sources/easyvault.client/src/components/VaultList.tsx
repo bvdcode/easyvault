@@ -4,20 +4,29 @@ import {
   Typography,
   IconButton,
   LinearProgress,
+  TextField,
+  InputAdornment,
+  useMediaQuery,
 } from "@mui/material";
 import { t } from "i18next";
 import { VaultData } from "../types";
 import { toast } from "react-toastify";
 import { VaultEntryEditForm } from ".";
 import { confirm } from "material-ui-confirm";
-import { useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 import { VaultEntryEditFormRef } from "./VaultEntryEditForm";
-import { Add, Delete, Edit, Save } from "@mui/icons-material";
+import { Clear, Delete, Edit, Search } from "@mui/icons-material";
 import { DataGrid, GridColDef, GridActionsCellItem } from "@mui/x-data-grid";
 import { useVault } from "../contexts/VaultContext";
+import { useTheme } from "@mui/material/styles";
+import { filterVaultData } from "../utils/filterVaultData";
+import VaultGridFooter from "./VaultGridFooter";
 
 const VaultList: React.FC = () => {
   const editFormRef = useRef<VaultEntryEditFormRef>(null);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const theme = useTheme();
+  const isCompactLayout = useMediaQuery(theme.breakpoints.down("sm"));
   const {
     vaultData,
     isLoading,
@@ -26,6 +35,10 @@ const VaultList: React.FC = () => {
     updateVaultData,
     saveVaultData,
   } = useVault();
+  const filteredVaultData = useMemo(
+    () => filterVaultData(vaultData, searchQuery),
+    [searchQuery, vaultData],
+  );
   const columns: GridColDef<VaultData>[] = [
     {
       field: "appName",
@@ -104,8 +117,9 @@ const VaultList: React.FC = () => {
       cancellationText: t("common.cancel"),
       confirmationText: t("common.confirm"),
       dialogProps: {
-        maxWidth: "md",
+        maxWidth: "lg",
         fullWidth: true,
+        fullScreen: isCompactLayout,
       },
     }).then((result) => {
       if (result.confirmed && editFormRef.current) {
@@ -210,69 +224,75 @@ const VaultList: React.FC = () => {
         </Typography>
         {isLoading && <LinearProgress sx={{ width: "100%", mb: 2 }} />}{" "}
         {!isLoading && (
-          <>
-            {vaultData && vaultData.length > 0 ? (
-              <Box sx={{ flexGrow: 1, width: "100%", minHeight: 0 }}>
-                <DataGrid
-                  rows={vaultData}
-                  columns={columns}
-                  getRowId={(row) => row.keyId}
-                  initialState={{
-                    pagination: {
-                      paginationModel: {
-                        pageSize: 10,
-                      },
-                    },
-                  }}
-                  pageSizeOptions={[5, 10, 25]}
-                  checkboxSelection={false}
-                  disableRowSelectionOnClick
-                />
-              </Box>
-            ) : (
-              <Typography variant="body1" sx={{ my: 3 }}>
-                {t("vaultList.emptyMessage")}
-              </Typography>
-            )}
-
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginTop: 2,
-                gap: 1,
-                width: "100%",
-              }}
-            >
-              <IconButton
-                title={
-                  hasChanges
-                    ? t("vaultList.saveEntries")
-                    : t("vaultList.noChanges")
-                }
-                onClick={saveVaultData}
-                disabled={!hasChanges}
-                sx={{
-                  display: vaultData.length === 0 ? "none" : "inline-flex",
-                }}
-              >
-                <Save color={hasChanges ? "primary" : "disabled"} />
-              </IconButton>
-              <Box
-                sx={{
-                  flexGrow: 1,
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              flexGrow: 1,
+              gap: 1.5,
+              width: "100%",
+              minHeight: 0,
+            }}
+          >
+            {vaultData.length > 0 && (
+              <TextField
+                fullWidth
+                size="small"
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                label={t("vaultList.searchLabel")}
+                placeholder={t("vaultList.searchPlaceholder")}
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Search fontSize="small" />
+                      </InputAdornment>
+                    ),
+                    endAdornment: searchQuery ? (
+                      <InputAdornment position="end">
+                        <IconButton
+                          size="small"
+                          aria-label={t("vaultList.clearSearch")}
+                          onClick={() => setSearchQuery("")}
+                        >
+                          <Clear fontSize="small" />
+                        </IconButton>
+                      </InputAdornment>
+                    ) : null,
+                  },
                 }}
               />
-              <IconButton
-                title={t("vaultList.addNewEntry")}
-                onClick={handleAddNewEntry}
-              >
-                <Add color="primary" />
-              </IconButton>
-            </Box>
-          </>
+            )}
+            <DataGrid
+              rows={filteredVaultData}
+              columns={columns}
+              getRowId={(row) => row.keyId}
+              autoPageSize
+              columnVisibilityModel={{
+                secretsCount: !isCompactLayout,
+              }}
+              localeText={{
+                noRowsLabel:
+                  vaultData.length === 0
+                    ? t("vaultList.emptyMessage")
+                    : t("vaultList.noSearchResults"),
+              }}
+              slots={{
+                footer: VaultGridFooter,
+              }}
+              slotProps={{
+                footer: {
+                  hasChanges,
+                  hasEntries: vaultData.length > 0,
+                  onAdd: handleAddNewEntry,
+                  onSave: saveVaultData,
+                },
+              }}
+              checkboxSelection={false}
+              disableRowSelectionOnClick
+            />
+          </Box>
         )}
       </Box>
     </Paper>
