@@ -37,3 +37,5 @@ msbuild.wrn
 *.sqlite-wal
 *.key
 data
+AGENTS.md
+notes/
