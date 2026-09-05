@@ -10,6 +10,7 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 FROM with-node AS build
 ARG BUILD_CONFIGURATION=Release
+ARG VITE_APP_VERSION=dev
 WORKDIR /src
 COPY ["EasyVault.Server/EasyVault.Server.csproj", "EasyVault.Server/"]
 COPY ["easyvault.client/easyvault.client.esproj", "easyvault.client/"]

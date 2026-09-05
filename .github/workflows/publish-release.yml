@@ -41,6 +41,23 @@ jobs:
         id: gitversion
         uses: gittools/actions/gitversion/execute@v3.1.11
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: Sources/easyvault.client/package-lock.json
+
+      - name: Validate client
+        working-directory: Sources/easyvault.client
+        env:
+          VITE_APP_VERSION: ${{ steps.gitversion.outputs.SemVer }}
+        run: |
+          npm ci
+          npm run lint
+          npm run test
+          npm run build
+
       - name: Display GitVersion outputs
         run: |
           echo "SemVer: ${{ steps.gitversion.outputs.SemVer }}"
@@ -70,6 +87,8 @@ jobs:
           context: ${{ env.CONTEXT_DIR }}
           file: ${{ env.CONTEXT_DIR }}/${{ env.DOCKERFILE }}
           push: true
+          build-args: |
+            VITE_APP_VERSION=${{ steps.gitversion.outputs.SemVer }}
           tags: |
             ${{ steps.tags.outputs.docker_tag }}
             ${{ steps.tags.outputs.docker_tag_latest }}
@@ -87,6 +106,8 @@ jobs:
           context: ${{ env.CONTEXT_DIR }}
           file: ${{ env.CONTEXT_DIR }}/${{ env.DOCKERFILE }}
           push: true
+          build-args: |
+            VITE_APP_VERSION=${{ steps.gitversion.outputs.SemVer }}
           tags: |
             ${{ steps.tags.outputs.ghcr_tag }}
             ${{ steps.tags.outputs.ghcr_tag_latest }}

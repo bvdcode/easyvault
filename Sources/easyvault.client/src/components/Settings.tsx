@@ -1,6 +1,5 @@
 import {
   Box,
-  Paper,
   Stack,
   Select,
   Switch,
@@ -115,7 +114,7 @@ const Settings: React.FC<SettingsProps> = ({ onTabChange }) => {
   };
 
   return (
-    <Paper sx={{ p: 3, width: "100%", mx: "auto" }}>
+    <Box sx={{ p: 3, width: "100%", mx: "auto" }}>
       <input
         type="file"
         ref={fileInputRef}
@@ -242,7 +241,7 @@ const Settings: React.FC<SettingsProps> = ({ onTabChange }) => {
           </Button>
         </Box>
       </Stack>
-    </Paper>
+    </Box>
   );
 };
 

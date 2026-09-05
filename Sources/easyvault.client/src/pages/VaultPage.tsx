@@ -4,6 +4,7 @@ import { Settings, VaultList } from "../components";
 import { Box, Paper, Tab, Tabs } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useVault } from "../contexts/VaultContext";
+import SettingsFooter from "../components/SettingsFooter";
 
 const VaultPage: React.FC = () => {
   const { t } = useTranslation();
@@ -59,6 +60,7 @@ const VaultPage: React.FC = () => {
         {selectedTab === 0 && <VaultList />}
         {selectedTab === 1 && <Settings onTabChange={setSelectedTab} />}
       </Box>
+      {selectedTab === 1 && <SettingsFooter />}
     </Paper>
   );
 };

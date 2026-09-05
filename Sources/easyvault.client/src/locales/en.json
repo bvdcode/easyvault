@@ -6,6 +6,8 @@
     "emptyPasswordError": "Please enter your key"
   },
   "settings": {
+    "appVersion": "EasyVault · {{version}}",
+    "github": "GitHub",
     "language": "Language",
     "languages": {
       "en": "English",
