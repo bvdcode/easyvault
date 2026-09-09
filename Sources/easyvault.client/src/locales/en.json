@@ -5,16 +5,18 @@
     "infoMessage": "When you connect, the Vault will be unsealed",
     "emptyPasswordError": "Please enter your key"
   },
+  "app": {
+    "version": "EasyVault · {{version}}",
+    "github": "GitHub"
+  },
   "settings": {
-    "appVersion": "EasyVault · {{version}}",
-    "github": "GitHub",
     "language": "Language",
     "languages": {
       "en": "English",
       "ru": "Русский"
     },
     "darkMode": "Theme",
-    "logout": "Change encryption key",
+    "changeEncryptionKey": "Change encryption key: {{keyPart}}",
     "export": "Export",
     "import": "Import",
     "exportSuccess": "Vault data has been exported successfully",
@@ -32,7 +34,6 @@
   "vaultList": {
     "fetchError": "Can't receive data from server - {{error}}",
     "loadingMessage": "Loading your secrets...",
-    "title": "Your secrets retrieved with specified key: {{keyPart}}",
     "emptyMessage": "Empty - let's create something?",
     "searchLabel": "Search secrets",
     "searchPlaceholder": "Application, secret key, or value",

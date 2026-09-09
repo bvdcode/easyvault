@@ -30,8 +30,9 @@ const Settings: React.FC<SettingsProps> = ({ onTabChange }) => {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const { isDarkMode, toggleTheme } = useAppTheme();
-  const { vaultData, importVaultData } = useVault();
+  const { vaultData, password, importVaultData } = useVault();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const maskedKey = `****${password?.slice(-4) ?? ""}`;
 
   const handleLanguageChange = (event: SelectChangeEvent<string>) => {
     i18n.changeLanguage(event.target.value);
@@ -209,8 +210,9 @@ const Settings: React.FC<SettingsProps> = ({ onTabChange }) => {
             onClick={() => navigate("/login")}
             variant="outlined"
             fullWidth
+            sx={{ textTransform: "none" }}
           >
-            {t("settings.logout")}
+            {t("settings.changeEncryptionKey", { keyPart: maskedKey })}
           </Button>
         </Box>
 

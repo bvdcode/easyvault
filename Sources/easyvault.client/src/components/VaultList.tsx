@@ -1,7 +1,5 @@
 import {
   Box,
-  Paper,
-  Typography,
   IconButton,
   LinearProgress,
   TextField,
@@ -27,14 +25,8 @@ const VaultList: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const theme = useTheme();
   const isCompactLayout = useMediaQuery(theme.breakpoints.down("sm"));
-  const {
-    vaultData,
-    isLoading,
-    hasChanges,
-    password,
-    updateVaultData,
-    saveVaultData,
-  } = useVault();
+  const { vaultData, isLoading, hasChanges, updateVaultData, saveVaultData } =
+    useVault();
   const filteredVaultData = useMemo(
     () => filterVaultData(vaultData, searchQuery),
     [searchQuery, vaultData],
@@ -202,100 +194,92 @@ const VaultList: React.FC = () => {
   };
 
   return (
-    <Paper sx={{ width: "100%", height: "100%", overflow: "hidden" }}>
-      <Box
-        sx={{
-          maxWidth: 800,
-          margin: "auto",
-          padding: 1,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          height: "100%",
-        }}
-      >
-        <Typography variant="h6" gutterBottom>
-          {t("vaultList.title", {
-            keyPart:
-              password && password.length > 4
-                ? `****${password.slice(-4)}`
-                : password || "",
-          })}
-        </Typography>
-        {isLoading && <LinearProgress sx={{ width: "100%", mb: 2 }} />}{" "}
-        {!isLoading && (
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              flexGrow: 1,
-              gap: 1.5,
-              width: "100%",
-              minHeight: 0,
-            }}
-          >
-            {vaultData.length > 0 && (
-              <TextField
-                fullWidth
-                size="small"
-                value={searchQuery}
-                onChange={(event) => setSearchQuery(event.target.value)}
-                label={t("vaultList.searchLabel")}
-                placeholder={t("vaultList.searchPlaceholder")}
-                slotProps={{
-                  input: {
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Search fontSize="small" />
-                      </InputAdornment>
-                    ),
-                    endAdornment: searchQuery ? (
-                      <InputAdornment position="end">
-                        <IconButton
-                          size="small"
-                          aria-label={t("vaultList.clearSearch")}
-                          onClick={() => setSearchQuery("")}
-                        >
-                          <Clear fontSize="small" />
-                        </IconButton>
-                      </InputAdornment>
-                    ) : null,
-                  },
-                }}
-              />
-            )}
-            <DataGrid
-              rows={filteredVaultData}
-              columns={columns}
-              getRowId={(row) => row.keyId}
-              autoPageSize
-              columnVisibilityModel={{
-                secretsCount: !isCompactLayout,
-              }}
-              localeText={{
-                noRowsLabel:
-                  vaultData.length === 0
-                    ? t("vaultList.emptyMessage")
-                    : t("vaultList.noSearchResults"),
-              }}
-              slots={{
-                footer: VaultGridFooter,
-              }}
+    <Box
+      sx={{
+        width: "100%",
+        maxWidth: 800,
+        mx: "auto",
+        p: 1,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        height: "100%",
+        overflow: "hidden",
+      }}
+    >
+      {isLoading && <LinearProgress sx={{ width: "100%", mb: 2 }} />}{" "}
+      {!isLoading && (
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            flexGrow: 1,
+            gap: 1.5,
+            width: "100%",
+            minHeight: 0,
+          }}
+        >
+          {vaultData.length > 0 && (
+            <TextField
+              fullWidth
+              size="small"
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              label={t("vaultList.searchLabel")}
+              placeholder={t("vaultList.searchPlaceholder")}
               slotProps={{
-                footer: {
-                  hasChanges,
-                  hasEntries: vaultData.length > 0,
-                  onAdd: handleAddNewEntry,
-                  onSave: saveVaultData,
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Search fontSize="small" />
+                    </InputAdornment>
+                  ),
+                  endAdornment: searchQuery ? (
+                    <InputAdornment position="end">
+                      <IconButton
+                        size="small"
+                        aria-label={t("vaultList.clearSearch")}
+                        onClick={() => setSearchQuery("")}
+                      >
+                        <Clear fontSize="small" />
+                      </IconButton>
+                    </InputAdornment>
+                  ) : null,
                 },
               }}
-              checkboxSelection={false}
-              disableRowSelectionOnClick
             />
-          </Box>
-        )}
-      </Box>
-    </Paper>
+          )}
+          <DataGrid
+            rows={filteredVaultData}
+            columns={columns}
+            getRowId={(row) => row.keyId}
+            autoPageSize
+            columnVisibilityModel={{
+              secretsCount: !isCompactLayout,
+            }}
+            localeText={{
+              noRowsLabel:
+                vaultData.length === 0
+                  ? t("vaultList.emptyMessage")
+                  : t("vaultList.noSearchResults"),
+            }}
+            slots={{
+              footer: VaultGridFooter,
+            }}
+            slotProps={{
+              footer: {
+                hasChanges,
+                hasEntries: vaultData.length > 0,
+                onAdd: handleAddNewEntry,
+                onSave: saveVaultData,
+              },
+            }}
+            checkboxSelection={false}
+            disableRowSelectionOnClick
+          />
+        </Box>
+      )}
+    </Box>
   );
 };
 

@@ -5,16 +5,18 @@
     "infoMessage": "Когда вы подключитесь, хранилище будет распечатано",
     "emptyPasswordError": "Пожалуйста, введите свой ключ"
   },
+  "app": {
+    "version": "EasyVault · {{version}}",
+    "github": "GitHub"
+  },
   "settings": {
-    "appVersion": "EasyVault · {{version}}",
-    "github": "GitHub",
     "languages": {
       "en": "English",
       "ru": "Русский"
     },
     "language": "Язык",
     "darkMode": "Тема",
-    "logout": "Сменить ключ шифрования",
+    "changeEncryptionKey": "Сменить ключ шифрования: {{keyPart}}",
     "export": "Экспорт",
     "import": "Импорт",
     "exportSuccess": "Данные хранилища успешно экспортированы",
@@ -32,7 +34,6 @@
   "vaultList": {
     "fetchError": "Не удается получить данные с сервера - {{error}}",
     "loadingMessage": "Загружаю ваши секреты...",
-    "title": "Ваши секреты извлечены с указанным ключом: {{keyPart}}",
     "emptyMessage": "Пусто - давайте что-нибудь создадим?",
     "searchLabel": "Поиск секретов",
     "searchPlaceholder": "Приложение, ключ или значение секрета",

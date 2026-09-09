@@ -2,7 +2,7 @@ import { GitHub } from "@mui/icons-material";
 import { Divider, Link, Stack, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
-const SettingsFooter = () => {
+const AppFooter = () => {
   const { t } = useTranslation();
 
   return (
@@ -10,10 +10,15 @@ const SettingsFooter = () => {
       component="footer"
       direction="row"
       spacing={1.5}
-      sx={{ alignItems: "center", justifyContent: "center", p: 2, flexShrink: 0 }}
+      sx={{
+        alignItems: "center",
+        justifyContent: "center",
+        p: 2,
+        flexShrink: 0,
+      }}
     >
       <Typography variant="caption" color="text.secondary">
-        {t("settings.appVersion", {
+        {t("app.version", {
           version: import.meta.env.VITE_APP_VERSION,
         })}
       </Typography>
@@ -25,13 +30,18 @@ const SettingsFooter = () => {
         underline="hover"
         color="text.secondary"
         variant="caption"
-        sx={{ display: "inline-flex", alignItems: "center", gap: 0.75, py: 0.5 }}
+        sx={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 0.75,
+          py: 0.5,
+        }}
       >
         <GitHub fontSize="small" />
-        {t("settings.github")}
+        {t("app.github")}
       </Link>
     </Stack>
   );
 };
 
-export default SettingsFooter;
+export default AppFooter;
